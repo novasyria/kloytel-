@@ -1,0 +1,2519 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>K Loyalty - الإدارة العامة</title>
+
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- QR -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+
+    <!-- Font -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Tajawal', Arial, sans-serif;
+        }
+
+        body {
+            background: #0b0b0b;
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        /* =========================
+           الهيدر
+        ========================= */
+
+        .header {
+            background: #151515;
+            border: 1px solid #292929;
+            border-radius: 20px;
+            padding: 20px 25px;
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            color: #d4af37;
+            font-size: 28px;
+            font-weight: 800;
+        }
+
+        .subtitle {
+            color: #888;
+            font-size: 14px;
+            margin-top: 2px;
+        }
+
+        /* =========================
+           إضافة مشروع
+        ========================= */
+
+        .add-box {
+            background: #151515;
+            border: 1px solid #292929;
+            border-radius: 18px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .add-title {
+            color: #d4af37;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+        }
+
+        input {
+            width: 100%;
+            padding: 13px;
+            background: #202020;
+            color: white;
+            border: 1px solid #333;
+            border-radius: 10px;
+            outline: none;
+            font-size: 15px;
+        }
+
+        input:focus {
+            border-color: #d4af37;
+        }
+
+        .add-button {
+            width: 100%;
+            padding: 13px;
+            margin-top: 12px;
+            background: #d4af37;
+            color: #111;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .add-button:disabled {
+            opacity: .6;
+            cursor: not-allowed;
+        }
+
+        .message {
+            text-align: center;
+            margin-top: 10px;
+            min-height: 20px;
+        }
+
+        /* =========================
+           الإحصائيات
+        ========================= */
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .stat {
+            background: #151515;
+            border: 1px solid #292929;
+            border-radius: 16px;
+            padding: 18px;
+            text-align: center;
+        }
+
+        .stat-title {
+            color: #888;
+            margin-bottom: 8px;
+        }
+
+        .stat-number {
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .total-number {
+            color: #d4af37;
+        }
+
+        .active-number {
+            color: #76e39b;
+        }
+
+        .inactive-number {
+            color: #ff7777;
+        }
+
+        /* =========================
+           المشاريع
+        ========================= */
+
+        .projects-box {
+            background: #151515;
+            border: 1px solid #292929;
+            border-radius: 18px;
+            padding: 20px;
+        }.projects-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 18px;
+        }
+
+        .projects-title {
+            color: #d4af37;
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .search {
+            max-width: 300px;
+        }
+
+        .projects {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .project {
+            background: #202020;
+            border: 1px solid #333;
+            border-radius: 16px;
+            padding: 20px;
+            cursor: pointer;
+            transition: .2s;
+        }
+
+        .project:hover {
+            border-color: #d4af37;
+            transform: translateY(-3px);
+        }
+
+        .project-name {
+            color: #d4af37;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .project-code {
+            color: #aaa;
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+
+        .project-phone {
+            color: #777;
+            font-size: 12px;
+            margin-bottom: 15px;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .active {
+            color: #76e39b;
+            background: #183322;
+        }
+
+        .inactive {
+            color: #ff7777;
+            background: #351919;
+        }
+
+        .empty,
+        .loading {
+            text-align: center;
+            color: #888;
+            padding: 30px;
+            grid-column: 1 / -1;
+        }
+
+        .loading {
+            color: #d4af37;
+        }
+
+        /* =========================
+           التفاصيل
+        ========================= */
+
+        .details {
+            display: none;
+            background: #151515;
+            border: 1px solid #d4af37;
+            border-radius: 18px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .details.show {
+            display: block;
+        }
+
+        .details-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .details-name {
+            color: #d4af37;
+            font-size: 25px;
+            font-weight: bold;
+        }
+
+        .close-button {
+            padding: 10px 18px;
+            background: #333;
+            color: white;
+            border: none;
+            border-radius: 9px;
+            cursor: pointer;
+        }
+
+        .info {
+            background: #202020;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 10px 0;
+            border-bottom: 1px solid #333;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: #888;
+        }
+
+        .info-value {
+            color: white;
+            font-weight: bold;
+        }
+
+        /* =========================
+           الرموز
+        ========================= */
+
+        .codes-title {
+            color: #aaa;
+            margin-bottom: 12px;
+            font-weight: bold;
+        }
+
+        .codes {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .code-box {
+            background: #202020;
+            border: 1px solid #333;
+            border-radius: 14px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .code-box.client {
+            border-color: #76e39b;
+        }
+
+        .code-box.cashier {
+            border-color: #d4af37;
+        }
+
+        .code-box.admin {
+            border-color: #b79cff;
+        }.code-title {
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .client-color {
+            color: #76e39b;
+        }
+
+        .cashier-color {
+            color: #d4af37;
+        }
+
+        .admin-color {
+            color: #b79cff;
+        }
+
+        .code-value {
+            background: #111;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            direction: ltr;
+            margin-bottom: 10px;
+        }
+
+        .copy-button {
+            width: 100%;
+            padding: 10px;
+            background: #444;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        /* =========================
+           QR العميل فقط
+        ========================= */
+
+        .qr-section {
+            background: #202020;
+            border-radius: 14px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .qr-title {
+            color: #76e39b;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .qr {
+            width: 210px;
+            height: 210px;
+            background: white;
+            padding: 10px;
+            border-radius: 12px;
+            margin: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .qr img {
+            width: 190px;
+            height: 190px;
+        }
+
+        .qr-link {
+            background: #111;
+            color: #aaa;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 11px;
+            direction: ltr;
+            word-break: break-all;
+            margin: 15px 0;
+        }
+
+        .sub-status {
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: bold;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        .sub-status.sub-active {
+            background: #1d3a26;
+            color: #76e39b;
+        }
+
+        .sub-status.sub-trial {
+            background: #3a331d;
+            color: #e3c076;
+        }
+
+        .sub-status.sub-expired {
+            background: #3a1d1d;
+            color: #ff7777;
+        }
+
+        .sub-select {
+            width: 100%;
+            padding: 11px;
+            background: #111;
+            color: white;
+            border: 1px solid #333;
+            border-radius: 9px;
+            margin-bottom: 6px;
+            font-size: 14px;
+        }
+
+        .sub-select:focus {
+            outline: none;
+            border-color: #d4af37;
+        }
+
+        .sub-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+        }
+
+        .qr-button {
+            width: 100%;
+            padding: 11px;
+            background: #333;
+            color: white;
+            border: none;
+            border-radius: 9px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 8px;
+        }
+
+        /* =========================
+           تشغيل / إيقاف
+        ========================= */
+
+        .status-button {
+            width: 100%;
+            padding: 13px;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 15px;
+            margin-bottom: 15px;
+            cursor: pointer;
+        }
+
+        .stop-button {
+            background: #8b2d2d;
+            color: white;
+        }
+
+        .start-button {
+            background: #287a43;
+            color: white;
+        }
+
+        /* =========================
+           الموبايل
+        ========================= */
+
+        @media (max-width: 800px) {
+
+            .inputs {
+                grid-template-columns: 1fr;
+            }
+
+            .projects {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .codes {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+        @media (max-width: 550px) {
+
+            body {
+                padding: 10px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .projects {
+                grid-template-columns: 1fr;
+            }
+
+            .projects-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search {
+                max-width: none;
+            }
+
+            .details-header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: stretch;
+            }
+
+            .close-button {
+                width: 100%;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+
+<!-- =========================
+     لوحة الإدارة مباشرة
+========================= -->
+
+<main
+    id="adminPanel"
+    class="container"
+>
+
+
+    <!-- الهيدر -->
+
+    <div class="header">
+
+        <div>
+
+            <div class="logo">
+                K Loyalty
+            </div><div class="subtitle">
+                الإدارة العامة للمشاريع
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         إضافة مشروع
+    ========================= -->
+
+    <div class="add-box">
+
+        <div class="add-title">
+            + إضافة مشروع جديد
+        </div>
+
+        <div class="inputs">
+
+            <input
+                id="storeName"
+                type="text"
+                placeholder="اسم المشروع"
+            >
+
+            <input
+                id="storeCode"
+                type="text"
+                placeholder="كود المشروع مثل K001"
+            >
+
+            <input
+                id="whatsapp"
+                type="text"
+                placeholder="رقم واتساب"
+            >
+
+        </div>
+
+        <button
+            id="addButton"
+            class="add-button"
+            type="button"
+        >
+            إضافة المشروع
+        </button>
+
+        <div
+            id="message"
+            class="message"
+        ></div>
+
+    </div>
+
+
+    <!-- =========================
+         الإحصائيات
+    ========================= -->
+
+    <div class="stats">
+
+        <div class="stat">
+
+            <div class="stat-title">
+                جميع المشاريع
+            </div>
+
+            <div
+                id="total"
+                class="stat-number total-number"
+            >
+                0
+            </div>
+
+        </div>
+
+
+        <div class="stat">
+
+            <div class="stat-title">
+                المشاريع النشطة
+            </div>
+
+            <div
+                id="active"
+                class="stat-number active-number"
+            >
+                0
+            </div>
+
+        </div>
+
+
+        <div class="stat">
+
+            <div class="stat-title">
+                المشاريع المتوقفة
+            </div>
+
+            <div
+                class="stat-number inactive-number"
+            >
+                0
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         المشاريع
+    ========================= -->
+
+    <div class="projects-box">
+
+        <div class="projects-header">
+
+            <div class="projects-title">
+                المشاريع
+            </div>
+
+            <input
+                id="search"
+                class="search"
+                type="search"
+                placeholder="🔎 ابحث عن مشروع..."
+            >
+
+        </div>
+
+        <div
+            id="projects"
+            class="projects"
+        >
+
+            <div class="loading">
+                جاري تحميل المشاريع...
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         تفاصيل المشروع
+    ========================= -->
+
+    <div
+        id="details"
+        class="details"
+    >
+
+        <div class="details-header">
+
+            <div
+                id="detailsName"
+                class="details-name"
+            ></div>
+
+            <button
+                id="closeDetails"
+                class="close-button"
+                type="button"
+            >
+                إغلاق
+            </button>
+
+        </div>
+
+
+        <div
+            id="info"
+            class="info"
+        ></div>
+
+
+        <!-- الرموز -->
+
+        <div class="codes-title">
+            رموز المشروع
+        </div>
+
+        <div
+            id="codes"
+            class="codes"
+        ></div>
+
+
+        <!-- QR العميل فقط -->
+
+        <div class="qr-section">
+
+            <div class="qr-title">
+                👤 QR العميل
+            </div>
+
+            <div
+                id="clientQR"
+                class="qr"
+            ></div>
+
+            <div
+                id="clientLink"
+                class="qr-link"
+            ></div>
+
+            <button
+                id="copyClientLink"
+                class="qr-button"
+                type="button"
+            >
+                نسخ رابط العميل
+            </button>
+
+            <button
+                id="downloadQR"
+                class="qr-button"
+                type="button"
+            >
+                حفظ QR العميل
+            </button></div>
+
+
+        <!-- الاشتراك -->
+
+        <div class="qr-section">
+
+            <div class="qr-title">
+                💳 الاشتراك
+            </div>
+
+            <div
+                id="subStatus"
+                class="sub-status"
+            ></div>
+
+            <select
+                id="subPlan"
+                class="sub-select"
+            >
+                <option value="trial">
+                    تجربة (7 أيام)
+                </option>
+                <option value="monthly">
+                    شهري
+                </option>
+                <option value="yearly">
+                    سنوي
+                </option>
+            </select>
+
+            <div class="sub-actions">
+
+                <button
+                    id="subStartBtn"
+                    class="qr-button"
+                    type="button"
+                >
+                    بدء الاشتراك
+                </button>
+
+                <button
+                    id="subExtendBtn"
+                    class="qr-button"
+                    type="button"
+                >
+                    تمديد شهر
+                </button>
+
+                <button
+                    id="subYearBtn"
+                    class="qr-button"
+                    type="button"
+                >
+                    تمديد سنة
+                </button>
+
+            </div>
+
+            <div
+                id="subMessage"
+                class="message"
+            ></div>
+
+        </div>
+
+
+        <!-- تشغيل / إيقاف -->
+
+        <button
+            id="statusButton"
+            class="status-button"
+            type="button"
+        ></button>
+
+    </div>
+
+</main>
+
+
+<script>
+
+
+    // =====================================
+    // SUPABASE
+    // =====================================
+
+    const SUPABASE_URL =
+        "https://scrswrzdsoqumnkegezm.supabase.co";
+
+    const SUPABASE_KEY =
+        "sb_publishable_bUmi0XAI1rVidgGWgnSJfw_1Ri9H1uQ";
+
+    const db =
+        window.supabase.createClient(
+            SUPABASE_URL,
+            SUPABASE_KEY
+        );
+
+
+    // =====================================
+    // عناصر الصفحة
+    // =====================================
+
+    const storeName =
+        document.getElementById("storeName");
+
+    const storeCode =
+        document.getElementById("storeCode");
+
+    const whatsapp =
+        document.getElementById("whatsapp");
+
+    const addButton =
+        document.getElementById("addButton");
+
+    const message =
+        document.getElementById("message");
+
+    const projects =
+        document.getElementById("projects");
+
+    const search =
+        document.getElementById("search");
+
+    const total =
+        document.getElementById("total");
+
+    const active =
+        document.getElementById("active");
+
+    const inactive =
+        document.querySelector(
+            ".inactive-number"
+        );
+
+    const details =
+        document.getElementById("details");
+
+    const detailsName =
+        document.getElementById("detailsName");
+
+    const info =
+        document.getElementById("info");
+
+    const codes =
+        document.getElementById("codes");
+
+    const clientQR =
+        document.getElementById("clientQR");
+
+    const clientLinkElement =
+        document.getElementById("clientLink");
+
+    const copyClientLink =
+        document.getElementById(
+            "copyClientLink"
+        );
+
+    const downloadQR =
+        document.getElementById(
+            "downloadQR"
+        );
+
+    const statusButton =
+        document.getElementById(
+            "statusButton"
+        );
+
+    const subStatus =
+        document.getElementById(
+            "subStatus"
+        );
+
+    const subPlan =
+        document.getElementById(
+            "subPlan"
+        );
+
+    const subStartBtn =
+        document.getElementById(
+            "subStartBtn"
+        );
+
+    const subExtendBtn =
+        document.getElementById(
+            "subExtendBtn"
+        );
+
+    const subYearBtn =
+        document.getElementById(
+            "subYearBtn"
+        );
+
+    const subMessage =
+        document.getElementById(
+            "subMessage"
+        );
+
+    const closeDetails =
+        document.getElementById(
+            "closeDetails"
+        );
+
+
+    let stores = [];
+
+    let selectedStore = null;
+
+
+    // =====================================
+    // توليد رمز عشوائي
+    // =====================================
+
+    function generateCode(prefix) {
+
+        const number =
+            Math.floor(
+                1000 +
+                Math.random() * 9000
+            );
+
+        return prefix + number;
+
+    }
+
+
+    // =====================================
+    // معرفة مجلد المشروع
+    // =====================================
+
+    function getFolder() {
+
+        const url =
+            window.location.href;
+
+        return url.substring(
+            0,
+            url.lastIndexOf("/") + 1
+        );
+
+    }
+
+
+    // =====================================
+    // رابط العميل
+    // =====================================
+
+    function getClientLink(code) {
+
+        return (
+            window.location.origin +
+            "/k-loyalty/client.html?code=" +
+            encodeURIComponent(code)
+        );
+
+    }
+
+
+    // =====================================
+    // تحميل المشاريع
+    // =====================================
+
+    async function loadStores() {
+
+        projects.innerHTML =
+            '<div class="loading">جاري تحميل المشاريع...</div>';
+
+
+        const result =
+            await db
+                .from("stores")
+                .select(
+                    "id, store_code, store_name, is_active, whatsapp_num, code_client, code_cashier, code_admin, sub_plan, trial_started_at, expires_at"
+                )
+                .order(
+                    "id",
+                    {
+                        ascending: false
+                    }
+                );
+
+
+        if (result.error) {
+
+            projects.innerHTML =
+                '<div class="empty">' +
+                result.error.message +
+                '</div>';
+
+            console.error(result.error);
+
+            return;
+
+        }
+
+
+        stores =
+            result.data || [];updateNumbers();
+
+        showProjects(stores);
+
+    }
+
+
+    // =====================================
+    // الإحصائيات
+    // =====================================
+
+    function updateNumbers() {
+
+        total.textContent =
+            stores.length;
+
+
+        let activeCount = 0;
+
+
+        stores.forEach(
+            function (store) {
+
+                if (
+                    store.is_active === true
+                ) {
+
+                    activeCount++;
+
+                }
+
+            }
+        );
+
+
+        active.textContent =
+            activeCount;
+
+        inactive.textContent =
+            stores.length -
+            activeCount;
+
+    }
+
+
+    // =====================================
+    // عرض المشاريع
+    // =====================================
+
+    function showProjects(list) {
+
+        projects.innerHTML = "";
+
+
+        if (list.length === 0) {
+
+            projects.innerHTML =
+                '<div class="empty">' +
+                'لا يوجد مشاريع.' +
+                '</div>';
+
+            return;
+
+        }
+
+
+        list.forEach(
+            function (store) {
+
+                createProject(store);
+
+            }
+        );
+
+    }
+
+
+    // =====================================
+    // مربع المشروع
+    // =====================================
+
+    function createProject(store) {
+
+        const box =
+            document.createElement("div");
+
+        box.className =
+            "project";
+
+
+        const name =
+            document.createElement("div");
+
+        name.className =
+            "project-name";
+
+        name.textContent =
+            store.store_name ||
+            "بدون اسم";
+
+        box.appendChild(name);
+
+
+        const code =
+            document.createElement("div");
+
+        code.className =
+            "project-code";
+
+        code.textContent =
+            "الكود: " +
+            (store.store_code || "-");
+
+        box.appendChild(code);
+
+
+        const phone =
+            document.createElement("div");
+
+        phone.className =
+            "project-phone";
+
+        phone.textContent =
+            "واتساب: " +
+            (store.whatsapp_num || "-");
+
+        box.appendChild(phone);
+
+
+        const status =
+            document.createElement("span");
+
+        status.className =
+            "status " +
+            (
+                store.is_active
+                    ? "active"
+                    : "inactive"
+            );
+
+        status.textContent =
+            store.is_active
+                ? "● شغال"
+                : "● متوقف";
+
+        box.appendChild(status);
+
+
+        box.onclick =
+            function () {
+
+                openDetails(store);
+
+            };
+
+
+        projects.appendChild(box);
+
+    }
+
+
+    // =====================================
+    // فتح تفاصيل المشروع
+    // =====================================
+
+    function openDetails(store) {
+
+        selectedStore =
+            store;
+
+
+        details.classList.add(
+            "show"
+        );
+
+
+        detailsName.textContent =
+            store.store_name ||
+            "بدون اسم";
+
+
+        info.innerHTML = "";
+
+
+        addInfo(
+            "كود المشروع",
+            store.store_code || "-"
+        );
+
+
+        addInfo(
+            "واتساب",
+            store.whatsapp_num || "-"
+        );
+
+
+        addInfo(
+            "الحالة",
+            store.is_active
+                ? "🟢 المشروع شغال"
+                : "🔴 المشروع متوقف"
+        );
+
+
+        addInfo(
+            "الاشتراك",
+            subscriptionLabel(
+                store
+            )
+        );
+
+
+        addInfo(
+            "تاريخ الانتهاء",
+            store.expires_at
+                ? formatDate(
+                    store.expires_at
+                )
+                : "-"
+        );
+
+
+        // =====================================
+        // الرموز
+        // =====================================
+
+        codes.innerHTML = "";
+
+
+        createCodeBox(
+            "👤 العميل",
+            "client",
+            "client-color",
+            store.code_client
+        );
+
+
+        createCodeBox(
+            "💰 الكاشير",
+            "cashier",
+            "cashier-color",
+            store.code_cashier
+        );
+
+
+        createCodeBox(
+            "🏢 إدارة المشروع",
+            "admin",
+            "admin-color",
+            store.code_admin
+        );// =====================================
+        // QR العميل فقط
+        // =====================================
+
+        const link =
+            getClientLink(
+                store.code_client
+            );
+
+
+        clientLinkElement.textContent =
+            link;
+
+
+        createQR(
+            clientQR,
+            link
+        );
+
+
+        // =====================================
+        // زر حالة المشروع
+        // =====================================
+
+        if (store.is_active) {
+
+            statusButton.textContent =
+                "إيقاف المشروع";
+
+            statusButton.className =
+                "status-button stop-button";
+
+        } else {
+
+            statusButton.textContent =
+                "تفعيل المشروع";
+
+            statusButton.className =
+                "status-button start-button";
+
+        }
+
+
+        renderSubscription(
+            store
+        );
+
+
+        details.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+
+    }
+
+
+    // =====================================
+    // تنسيق التاريخ
+    // =====================================
+
+    function formatDate(
+        dateString
+    ) {
+
+        if (!dateString) return "-";
+
+
+        const d =
+            new Date(
+                dateString
+            );
+
+
+        if (isNaN(d.getTime())) {
+            return "-";
+        }
+
+
+        return (
+            d.toLocaleDateString(
+                "ar-EG"
+            ) +
+            " " +
+            d.toLocaleTimeString(
+                "ar-EG",
+                {
+                    hour: "2-digit",
+                    minute: "2-digit"
+                }
+            )
+        );
+
+    }
+
+
+    // =====================================
+    // حالة الاشتراك
+    // =====================================
+
+    function subscriptionLabel(
+        store
+    ) {
+
+        const plan =
+            store.sub_plan ||
+            "trial";
+
+
+        if (
+            plan === "monthly"
+        ) {
+
+            return "شهري";
+
+        }
+
+
+        if (
+            plan === "yearly"
+        ) {
+
+            return "سنوي";
+
+        }
+
+
+        return "تجربة";
+
+    }
+
+
+    // =====================================
+    // عرض حالة الاشتراك
+    // =====================================
+
+    function renderSubscription(
+        store
+    ) {
+
+        if (!subStatus) {
+            return;
+        }
+
+
+        const plan =
+            store.sub_plan ||
+            "trial";
+
+
+        const hasExpiry =
+            !!store.expires_at;
+
+
+        const expired =
+            hasExpiry &&
+            new Date(
+                store.expires_at
+            ).getTime() <
+                Date.now();
+
+
+        let label =
+            "",
+            css =
+            "";
+
+
+        if (expired) {
+
+            label =
+                "⛔ انتهى الاشتراك";
+            css =
+                "sub-expired";
+
+        } else if (
+            plan === "trial"
+        ) {
+
+            label =
+                "🕐 فترة تجريبية";
+            css =
+                "sub-trial";
+
+        } else {
+
+            label =
+                "✅ اشتراك مفعل";
+            css =
+                "sub-active";
+
+        }
+
+
+        if (
+            store.expires_at
+        ) {
+
+            label +=
+                " - ينتهي " +
+                formatDate(
+                    store.expires_at
+                );
+
+        }
+
+
+        subStatus.textContent =
+            label;
+
+        subStatus.className =
+            "sub-status " +
+            css;
+
+
+        subPlan.value =
+            plan;
+
+    }
+
+
+    // =====================================
+    // إضافة معلومة
+    // =====================================
+
+    function addInfo(
+        label,
+        value
+    ) {
+
+        const row =
+            document.createElement(
+                "div"
+            );
+
+        row.className =
+            "info-row";
+
+
+        const labelElement =
+            document.createElement(
+                "span"
+            );
+
+        labelElement.className =
+            "info-label";
+
+        labelElement.textContent =
+            label;
+
+
+        const valueElement =
+            document.createElement(
+                "span"
+            );
+
+        valueElement.className =
+            "info-value";
+
+        valueElement.textContent =
+            value;
+
+
+        row.appendChild(
+            labelElement
+        );
+
+        row.appendChild(
+            valueElement
+        );
+
+
+        info.appendChild(row);
+
+    }
+
+
+    // =====================================
+    // مربع الرمز
+    // =====================================
+
+    function createCodeBox(
+        title,
+        type,
+        colorClass,
+        value
+    ) {
+
+        const box =
+            document.createElement(
+                "div"
+            );
+
+        box.className =
+            "code-box " +
+            type;
+
+
+        const titleElement =
+            document.createElement(
+                "div"
+            );
+
+        titleElement.className =
+            "code-title " +
+            colorClass;
+
+        titleElement.textContent =
+            title;
+
+
+        const valueElement =
+            document.createElement(
+                "div"
+            );
+
+        valueElement.className =
+            "code-value";
+
+        valueElement.textContent =
+            value || "-";
+
+
+        const copy =
+            document.createElement(
+                "button"
+            );
+
+        copy.className =
+            "copy-button";
+
+        copy.textContent =
+            "نسخ الرمز";
+
+
+        copy.onclick =
+            function () {
+
+                if (!value) return;
+
+
+                navigator.clipboard
+                    .writeText(value)
+                    .then(
+                        function () {
+
+                            copy.textContent =
+                                "تم النسخ ✅";
+
+
+                            setTimeout(
+                                function () {
+
+                                    copy.textContent =
+                                        "نسخ الرمز";
+
+                                },
+                                1500
+                            );
+
+                        }
+                    );
+
+            };
+
+
+        box.appendChild(
+            titleElement
+        );
+
+        box.appendChild(
+            valueElement
+        );
+
+        box.appendChild(
+            copy
+        );
+
+
+        codes.appendChild(box);
+
+    }
+
+
+    // =====================================
+    // إنشاء QR
+    // =====================================
+
+    function createQR(
+        container,
+        link
+    ) {
+
+        try {const qr =
+                qrcode(
+                    4,
+                    "L"
+                );
+
+
+            qr.addData(link);
+
+            qr.make();
+
+
+            container.innerHTML =
+                qr.createImgTag(
+                    5,
+                    5
+                );
+
+        } catch (error) {
+
+            container.textContent =
+                "تعذر إنشاء QR";
+
+            console.error(error);
+
+        }
+
+    }
+
+
+    // =====================================
+    // نسخ رابط العميل
+    // =====================================
+
+    copyClientLink.onclick =
+        function () {
+
+            const link =
+                clientLinkElement.textContent;
+
+
+            navigator.clipboard
+                .writeText(link)
+                .then(
+                    function () {
+
+                        copyClientLink.textContent =
+                            "تم النسخ ✅";
+
+
+                        setTimeout(
+                            function () {
+
+                                copyClientLink.textContent =
+                                    "نسخ رابط العميل";
+
+                            },
+                            1500
+                        );
+
+                    }
+                );
+
+        };
+
+
+    // =====================================
+    // حفظ QR
+    // =====================================
+
+    downloadQR.onclick =
+        function () {
+
+            const image =
+                clientQR.querySelector(
+                    "img"
+                );
+
+
+            if (!image) {
+
+                alert(
+                    "الـ QR غير جاهز."
+                );
+
+                return;
+
+            }
+
+
+            const a =
+                document.createElement(
+                    "a"
+                );
+
+
+            a.href =
+                image.src;
+
+
+            a.download =
+                (
+                    selectedStore.store_name ||
+                    "client"
+                ) +
+                "-QR.png";
+
+
+            a.click();
+
+        };
+
+
+    // =====================================
+    // إغلاق التفاصيل
+    // =====================================
+
+    closeDetails.onclick =
+        function () {
+
+            details.classList.remove(
+                "show"
+            );
+
+            selectedStore =
+                null;
+
+        };
+
+
+    // =====================================
+    // تشغيل / إيقاف المشروع
+    // =====================================
+
+    statusButton.onclick =
+        async function () {
+
+            if (!selectedStore)
+                return;
+
+
+            const newStatus =
+                !selectedStore.is_active;
+
+
+            const confirmMessage =
+                newStatus
+                    ? "هل تريد تفعيل المشروع؟"
+                    : "هل تريد إيقاف المشروع؟";
+
+
+            if (
+                !confirm(
+                    confirmMessage
+                )
+            ) {
+
+                return;
+
+            }
+
+
+            statusButton.disabled =
+                true;
+
+
+            statusButton.textContent =
+                "جاري التحديث...";
+
+
+            const result =
+                await db
+                    .from("stores")
+                    .update({
+                        is_active:
+                            newStatus
+                    })
+                    .eq(
+                        "id",
+                        selectedStore.id
+                    );
+
+
+            if (result.error) {
+
+                alert(
+                    "حدث خطأ:\n" +
+                    result.error.message
+                );
+
+                statusButton.disabled =
+                    false;
+
+                return;
+
+            }
+
+
+            const selectedId =
+                selectedStore.id;
+
+
+            await loadStores();
+
+
+            const updated =
+                stores.find(
+                    function (store) {
+
+                        return (
+                            store.id ===
+                            selectedId
+                        );
+
+                    }
+                );if (updated) {
+
+                openDetails(
+                    updated
+                );
+
+            }
+
+        };
+
+
+    // =====================================
+    // أزرار الاشتراك
+    // =====================================
+
+    function subHelper(
+        fn
+    ) {
+
+        return async function () {
+
+            if (!selectedStore) {
+
+                return;
+
+            }
+
+
+            subMessage.textContent =
+                "";
+
+
+            try {
+
+                const now =
+                    new Date();
+
+
+                const currentEnd =
+                    selectedStore.expires_at
+                        ? new Date(
+                            selectedStore.expires_at
+                        ).getTime()
+                        : now.getTime();
+
+
+                const base =
+                    Math.max(
+                        currentEnd,
+                        now.getTime()
+                    );
+
+
+                const updates =
+                    await fn(
+                        base,
+                        now
+                    );
+
+
+                const result =
+                    await db
+                        .from("stores")
+                        .update(
+                            updates
+                        )
+                        .eq(
+                            "id",
+                            selectedStore.id
+                        );
+
+
+                if (result.error) {
+
+                    subMessage.style.color =
+                        "#ff7777";
+
+                    subMessage.textContent =
+                        "خطأ: " +
+                        result.error.message;
+
+                    return;
+
+                }
+
+
+                const selectedId =
+                    selectedStore.id;
+
+
+                await loadStores();
+
+
+                const updated =
+                    stores.find(
+                        function (store) {
+
+                            return (
+                                store.id ===
+                                selectedId
+                            );
+
+                        }
+                    );
+
+
+                if (updated) {
+
+                    openDetails(
+                        updated
+                    );
+
+                    subMessage.style.color =
+                        "#76e39b";
+
+                    subMessage.textContent =
+                        "تم تحديث الاشتراك ✅";
+
+                    setTimeout(
+                        function () {
+
+                            subMessage.textContent =
+                                "";
+
+                        },
+                        2500
+                    );
+
+                }
+
+            } catch (error) {
+
+                subMessage.style.color =
+                    "#ff7777";
+
+                subMessage.textContent =
+                    "خطأ: " +
+                    error.message;
+
+            }
+
+        };
+
+    }
+
+
+    // بدء الاشتراك (من اليوم حسب الخطة)
+
+    subStartBtn.onclick =
+        subHelper(
+            function (
+                base,
+                now
+            ) {
+
+                const plan =
+                    subPlan.value;
+
+
+                let days =
+                    7;
+
+
+                if (
+                    plan === "monthly"
+                ) {
+
+                    days =
+                        30;
+
+                } else if (
+                    plan === "yearly"
+                ) {
+
+                    days =
+                        365;
+
+                }
+
+
+                const end =
+                    new Date(
+                        now.getTime() +
+                        days *
+                            86400000
+                    );
+
+
+                return {
+
+                    sub_plan:
+                        plan,
+
+                    trial_started_at:
+                        plan === "trial"
+                            ? now.toISOString()
+                            : null,
+
+                    expires_at:
+                        end.toISOString()
+
+                };
+
+            }
+        );
+
+
+    // تمديد شهر
+
+    subExtendBtn.onclick =
+        subHelper(
+            function (
+                base,
+                now
+            ) {
+
+                const end =
+                    new Date(
+                        base +
+                        30 *
+                            86400000
+                    );
+
+
+                return {
+
+                    expires_at:
+                        end.toISOString()
+
+                };
+
+            }
+        );
+
+
+    // تمديد سنة
+
+    subYearBtn.onclick =
+        subHelper(
+            function (
+                base,
+                now
+            ) {
+
+                const end =
+                    new Date(
+                        base +
+                        365 *
+                            86400000
+                    );
+
+
+                return {
+
+                    expires_at:
+                        end.toISOString()
+
+                };
+
+            }
+        );
+
+
+    // =====================================
+    // إضافة مشروع
+    // =====================================
+
+    addButton.onclick =
+        async function () {
+
+            const name =
+                storeName.value.trim();
+
+            const code =
+                storeCode.value.trim();
+
+            const phone =
+                whatsapp.value.trim();
+
+
+            message.textContent =
+                "";
+
+
+            if (!name || !code) {
+
+                message.style.color =
+                    "#ff7777";
+
+                message.textContent =
+                    "اكتب اسم المشروع وكود المشروع.";
+
+                return;
+
+            }
+
+
+            addButton.disabled =
+                true;
+
+            addButton.textContent =
+                "جاري الإضافة...";
+
+
+            try {
+
+                // التأكد من أن كود المشروع غير مستخدم
+
+                const check =
+                    await db
+                        .from("stores")
+                        .select("id")
+                        .eq(
+                            "store_code",
+                            code
+                        )
+                        .maybeSingle();
+
+
+                if (check.error) {
+
+                    throw check.error;
+
+                }
+
+
+                if (check.data) {
+
+                    message.style.color =
+                        "#ff7777";
+
+                    message.textContent =
+                        "كود المشروع مستخدم مسبقاً.";
+
+                    return;
+
+                }
+
+
+                // =====================================
+                // توليد الرموز
+                // =====================================
+
+                const clientCode =
+                    generateCode("CL");
+
+                const cashierCode =
+                    generateCode("CA");
+
+                const adminCode =
+                    generateCode("AD");
+
+
+                // =====================================
+                // إضافة المشروع
+                // =====================================
+
+                const result =
+                    await db
+                        .from("stores")
+                        .insert({
+
+                            store_code:
+                                code,
+
+                            store_name:
+                                name,
+
+                            whatsapp_num:
+                                phone,
+
+                            is_active:
+                                true,
+
+                            code_client:
+                                clientCode,
+
+                            code_cashier:
+                                cashierCode,
+
+                            code_admin:
+                                adminCode,
+
+                            sub_plan:
+                                "trial",
+
+                            trial_started_at:
+                                new Date()
+                                    .toISOString(),
+
+                            expires_at:
+                                new Date(
+                                    Date.now() +
+                                    7 *
+                                        86400000
+                                )
+                                    .toISOString()
+
+                        });
+
+
+                if (result.error) {
+
+                    throw result.error;
+
+                }
+
+
+                message.style.color =
+                    "#76e39b";
+
+                message.textContent =
+                    "تم إضافة المشروع وتوليد الرموز بنجاح ✅";
+
+
+                storeName.value =
+                    "";
+
+                storeCode.value =
+                    "";
+
+                whatsapp.value =
+                    "";
+
+
+                await loadStores();
+
+
+            } catch (error) {
+
+                console.error(error);
+
+                message.style.color =
+                    "#ff7777";
+
+                message.textContent =
+                    "حدث خطأ: " +
+                    error.message;
+
+            } finally {
+
+                addButton.disabled =
+                    false;
+
+                addButton.textContent =
+                    "إضافة المشروع";
+
+            }
+
+        };
+
+
+    // =====================================
+    // البحث
+    // =====================================
+
+    search.oninput =
+        function () {const text =
+                search.value
+                    .trim()
+                    .toLowerCase();
+
+
+            if (!text) {
+
+                showProjects(
+                    stores
+                );
+
+                return;
+
+            }
+
+
+            const filtered =
+                stores.filter(
+                    function (store) {
+
+                        const name =
+                            (
+                                store.store_name ||
+                                ""
+                            ).toLowerCase();
+
+
+                        const code =
+                            (
+                                store.store_code ||
+                                ""
+                            ).toLowerCase();
+
+
+                        return (
+                            name.includes(text) ||
+                            code.includes(text)
+                        );
+
+                    }
+                );
+
+
+            showProjects(
+                filtered
+            );
+
+        };
+
+
+    // =====================================
+    // تشغيل الإدارة مباشرة
+    // =====================================
+
+    loadStores();
+
+
+</script>
+
+</body>
+
+</html>
